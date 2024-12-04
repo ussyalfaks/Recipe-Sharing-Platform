@@ -10,22 +10,22 @@ const RecipeDetails = () => {
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
+    const fetchRecipe = async () => {
+      try {
+        const response = await fetch(`/api/recipes/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setRecipe(data);
+        } else {
+          throw new Error('Failed to fetch recipe');
+        }
+      } catch (error) {
+        console.error('Error fetching recipe:', error);
+      }
+    };
+
     fetchRecipe();
   }, [id]);
-
-  const fetchRecipe = async () => {
-    try {
-      const response = await fetch(`/api/recipes/${id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setRecipe(data);
-      } else {
-        throw new Error('Failed to fetch recipe');
-      }
-    } catch (error) {
-      console.error('Error fetching recipe:', error);
-    }
-  };
 
   const handleRating = async () => {
     try {
@@ -33,15 +33,15 @@ const RecipeDetails = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify({ rating })
+        body: JSON.stringify({ rating }),
       });
       if (response.ok) {
         const data = await response.json();
-        setRecipe(prevRecipe => ({
+        setRecipe((prevRecipe) => ({
           ...prevRecipe,
-          averageRating: data.averageRating
+          averageRating: data.averageRating,
         }));
         alert('Rating submitted successfully!');
       } else {
@@ -58,15 +58,15 @@ const RecipeDetails = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify({ text: comment })
+        body: JSON.stringify({ text: comment }),
       });
       if (response.ok) {
         const data = await response.json();
-        setRecipe(prevRecipe => ({
+        setRecipe((prevRecipe) => ({
           ...prevRecipe,
-          comments: data.comments
+          comments: data.comments,
         }));
         setComment('');
         alert('Comment added successfully!');
@@ -87,26 +87,28 @@ const RecipeDetails = () => {
       <p className="mb-2">Difficulty: {recipe.difficulty}</p>
       <p className="mb-2">Cuisine Type: {recipe.cuisineType}</p>
       <p className="mb-4">Average Rating: {recipe.averageRating.toFixed(1)} / 5</p>
-      
+
       <h3 className="text-2xl font-semibold mb-2">Ingredients:</h3>
       <ul className="list-disc pl-5 mb-4">
         {recipe.ingredients.map((ingredient, index) => (
           <li key={index}>{ingredient}</li>
         ))}
       </ul>
-      
+
       <h3 className="text-2xl font-semibold mb-2">Instructions:</h3>
       <ol className="list-decimal pl-5 mb-6">
         {recipe.instructions.map((instruction, index) => (
-          <li key={index} className="mb-2">{instruction}</li>
+          <li key={index} className="mb-2">
+            {instruction}
+          </li>
         ))}
       </ol>
-      
+
       {user && (
         <div className="mb-6">
           <h3 className="text-xl font-semibold mb-2">Rate this recipe:</h3>
-          <select 
-            value={rating} 
+          <select
+            value={rating}
             onChange={(e) => setRating(Number(e.target.value))}
             className="mr-2 p-2 border rounded"
           >
@@ -117,7 +119,7 @@ const RecipeDetails = () => {
             <option value="4">4 Stars</option>
             <option value="5">5 Stars</option>
           </select>
-          <button 
+          <button
             onClick={handleRating}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
@@ -125,7 +127,7 @@ const RecipeDetails = () => {
           </button>
         </div>
       )}
-      
+
       <h3 className="text-2xl font-semibold mb-2">Comments:</h3>
       {recipe.comments.map((comment, index) => (
         <div key={index} className="mb-4 p-4 bg-gray-100 rounded">
@@ -133,7 +135,7 @@ const RecipeDetails = () => {
           <p className="text-sm text-gray-600">By: {comment.user.name}</p>
         </div>
       ))}
-      
+
       {user && (
         <div className="mt-6">
           <textarea
@@ -143,7 +145,7 @@ const RecipeDetails = () => {
             className="w-full p-2 border rounded mb-2"
             rows="3"
           />
-          <button 
+          <button
             onClick={handleComment}
             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
           >
@@ -156,4 +158,3 @@ const RecipeDetails = () => {
 };
 
 export default RecipeDetails;
-

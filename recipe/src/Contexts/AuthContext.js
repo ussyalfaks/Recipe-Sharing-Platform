@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 export const AuthContext = createContext();
 
@@ -9,12 +10,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      // Verify token with backend
       fetch('/auth/verify', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       })
-        .then(res => res.json())
-        .then(data => {
+        .then((res) => res.json())
+        .then((data) => {
           if (data.user) setUser(data.user);
           setLoading(false);
         })
@@ -44,3 +44,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};

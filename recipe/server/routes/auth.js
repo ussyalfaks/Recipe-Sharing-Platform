@@ -1,7 +1,11 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 import User from '../models/User.js';
+
+// Load environment variables
+dotenv.config();
 
 const router = express.Router();
 
@@ -32,4 +36,3 @@ router.post('/login', async (req, res) => {
 });
 
 export default router;
-
